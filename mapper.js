@@ -19,7 +19,12 @@ const ObjectMapper = (function () {
 						if (!isObject(valKey)) {
 							acc[key] = getValue(ctx, valKey);
 						} else {
-							acc[key] = ctx[valKey['_source_']] ? ObjectMapper(ctx, valKey) : ctx[valKey['_source_']];
+							if(valKey['_source_'] === undefined || ctx[valKey['_source_']]) {
+								acc[key] = ObjectMapper(ctx, valKey);
+							} else {
+								acc[key] = ctx[valKey['_source_']];
+							}
+							
 						}
 					}
 					return acc;
@@ -29,7 +34,7 @@ const ObjectMapper = (function () {
 		}
 
 		function addItemsToArray(type, value) {
-			if(type === 'array') {
+			if(type === 'array' && source) {
 				const ctx = targetMap["_source_"]
 					? source[targetMap["_source_"]]
 					: source;
